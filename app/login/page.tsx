@@ -2,27 +2,48 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Image from 'next/image';
-
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    console.log({ email, password, rememberMe });
+  const handleSubmit = async (e: any) => {
+    e.preventDefault(); // Prevent the default form submission behavior
+
+    try {
+      const response = await axios.post("http://localhost:8080/login", 
+        { email, password },  
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const { token } = response.data;
+
+      // Store the JWT token in localStorage
+      localStorage.setItem('token', token);
+
+      // Redirect to /temp page
+      router.push('/temp');
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      alert("Login failed. Please check your credentials and try again.");
+    }
   };
 
   return (
     <section className="bg-[#161616]">
-      <Image src = '/logo.png' alt='logo icon' height={0} width={40} className='absolute top-5 left-5'></Image>
+      <Image src='/logo.png' alt='logo icon' height={0} width={40} className='absolute top-5 left-5'></Image>
       <div className="flex flex-col items-center mt-[8rem] px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl text-[24px] leading-tight tracking-tight text-gray-900 dark:text-white cursor-pointer">
               Login
-              <Link href='/register'><p className='text-[14px] mt-[0.2rem] text-[#a0a0a0]'>Dont have an account? <span className='underline'>Register</span></p></Link>
+              <Link href='/register'>
+                <p className='text-[14px] mt-[0.2rem] text-[#a0a0a0]'>Don't have an account? <span className='underline'>Register</span></p>
+              </Link>
             </h1>
             <div className="border-t-[0.01px] border-[#a0a0a054] w-full mt-[2.5rem]"></div>
             <form className="space-y-0 md:space-y-3" onSubmit={handleSubmit}>
@@ -53,6 +74,7 @@ export default function SignIn() {
                 />
               </div>
               <div className="flex items-center justify-between">
+                {/* Optionally add a "Remember Me" checkbox here */}
               </div>
               <button
                 type="submit"
