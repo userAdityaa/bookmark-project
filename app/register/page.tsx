@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 
 
 export default function Register() {
@@ -9,12 +10,30 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [username, setUsername] = useState('');
+  const [userIcon, setUserIcon] = useState('/user-0.svg');
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log({ email, username, password, rememberMe });
+    axios.post("http://localhost:8080/register", 
+      { email, username, password }, 
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+    setEmail('');
+    setPassword('');
+    setUsername('');
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const newUsername = e.target.value;
+    setUsername(newUsername);
+    if(newUsername == '') { 
+      setUserIcon('/user-0.svg');
+      return
+    }
+    const value = Math.floor(Math.random() * 6) + 1;
+    setUserIcon(`/user-${value}.svg`);
+  };
   return (
     <section className="bg-[#161616]">
       <Image src = '/logo.png' alt='logo icon' height={0} width={40} className='absolute top-5 left-5'></Image>
@@ -40,18 +59,19 @@ export default function Register() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div>
+              <div className='relative'>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
                 <input
                   type="name"
                   name="username"
                   id="username"
-                  className="border border-[#707070] text-zinc-100 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-[#161616]"
+                  className="border border-[#707070] text-zinc-100 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 bg-[#161616] pl-10"
                   placeholder="john"
                   required
                   value={username}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={handleUsernameChange}
                 />
+                <Image src = {userIcon} alt='username icon' height={0} width={20} className='absolute top-[2.6rem] left-3'></Image>
               </div>
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
