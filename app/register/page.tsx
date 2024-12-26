@@ -15,7 +15,7 @@ export default function Register() {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     axios.post("http://localhost:8080/register", 
-      { email, username, password }, 
+      { email, username, password, userIcon },  
       { headers: { 'Content-Type': 'application/json' } }
     )
     setEmail('');

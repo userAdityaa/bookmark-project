@@ -12,7 +12,7 @@ export default function SignIn() {
   const router = useRouter();
 
   const handleSubmit = async (e: any) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault(); 
 
     try {
       const response = await axios.post("http://localhost:8080/login", 
@@ -22,12 +22,10 @@ export default function SignIn() {
 
       const { token } = response.data;
 
-      // Store the JWT token in localStorage
       localStorage.setItem('token', token);
 
-      // Redirect to /temp page
-      router.push('/temp');
-    } catch (error) {
+      router.push('/bookmarks');
+    } catch (error: any) {
       console.error("Login error:", error.response?.data || error.message);
       alert("Login failed. Please check your credentials and try again.");
     }
