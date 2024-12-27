@@ -28,7 +28,6 @@ export async function POST(request: Request) {
       )
     }
 
-    // Verify password
     const isValid = await verifyPassword(password, user.password)
 
     if (!isValid) {
@@ -38,19 +37,17 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create JWT token
     const token = sign(
       { userId: user.id, email: user.email },
       JWT_SECRET,
       { expiresIn: '2d' }
     )
 
-    // Set cookie
     cookies().set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 24, // 2 days
+      maxAge: 7 * 24 * 60 * 24,
       path: '/',
     })
 

@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
       await tx.bookmark.create({
         data: {
-          name: 'Bookmark',
+          name: 'Bookmarks',
           icon: assetIcon,
           userId: user.id,
         }
