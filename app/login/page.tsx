@@ -19,12 +19,20 @@ export default function SignIn() {
         { email, password },  
         { headers: { 'Content-Type': 'application/json' } }
       );
-      router.push('/bookmarks');
+      
+      const bookmarkName = response.data?.user?.bookmarkList?.[0]?.name;
+      if (bookmarkName) {
+        // Navigate to the dynamic route, converting the bookmark name to lowercase
+        router.push(`/bookmarks/${bookmarkName.toLowerCase()}`);
+      } else {
+        alert("Bookmark not found!");
+      }
     } catch (error: any) {
       console.error("Login error:", error.response?.data || error.message);
       alert("Login failed. Please check your credentials and try again.");
     }
-  };
+};
+
 
   return (
     <section className="bg-[#161616]">
