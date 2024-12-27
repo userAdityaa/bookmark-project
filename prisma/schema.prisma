@@ -13,12 +13,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           Int        @id @default(autoincrement())
+  name         String
+  icon         String
+  email        String     @unique
+  password     String
+  bookmarkList Bookmark[] @relation("UserBookmarks") // One-to-many relation with Bookmark
+}
+
 model Bookmark {
   id        Int        @id @default(autoincrement())
   name      String
   icon      String
   listItems ListItem[]
   createdAt DateTime   @default(now())
+  userId    Int // Foreign key for User
+  User      User       @relation("UserBookmarks", fields: [userId], references: [id]) // Many-to-one relation with User
 }
 
 model ListItem {
