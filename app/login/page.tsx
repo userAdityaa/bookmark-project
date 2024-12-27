@@ -15,15 +15,10 @@ export default function SignIn() {
     e.preventDefault(); 
 
     try {
-      const response = await axios.post("http://localhost:8080/login", 
+      const response = await axios.post("http://localhost:3000/api/auth/login", 
         { email, password },  
         { headers: { 'Content-Type': 'application/json' } }
       );
-
-      const { token } = response.data;
-
-      localStorage.setItem('token', token);
-
       router.push('/bookmarks');
     } catch (error: any) {
       console.error("Login error:", error.response?.data || error.message);
