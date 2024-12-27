@@ -1,4 +1,3 @@
-// src/app/api/auth/register/route.ts
 import { NextResponse } from 'next/server'
 import { hashPassword } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -26,26 +25,39 @@ export async function POST(request: Request) {
       )
     }
 
-    // Hash password
     const hashedPassword = await hashPassword(password)
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        icon,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        icon: true,
-      }
+    const value = Math.floor(Math.random() * 6) + 1;
+    const assetIcon = `/user-${value}.svg`
+
+    const result = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          icon,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          icon: true,
+        }
+      })
+
+      await tx.bookmark.create({
+        data: {
+          name: 'Bookmark',
+          icon: assetIcon,
+          userId: user.id,
+        }
+      })
+
+      return user
     })
 
-    return NextResponse.json(user)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
