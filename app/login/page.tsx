@@ -19,13 +19,21 @@ export default function SignIn() {
         { email, password },  
         { headers: { 'Content-Type': 'application/json' } }
       );
-      
-      const bookmarkName = response.data?.user?.bookmarkList?.[0]?.name;
-      if (bookmarkName) {
-        // Navigate to the dynamic route, converting the bookmark name to lowercase
-        router.push(`/bookmarks/${bookmarkName.toLowerCase()}`);
-      } else {
-        alert("Bookmark not found!");
+
+      const userId = response.data.user.id;
+
+      const bookmarkResponse = await axios.get(`http://localhost:3000/api/bookmarks/user/${userId}`, 
+        {headers: {'Content-Type': 'application/json'}}
+      );
+
+      const bookmark = bookmarkResponse.data; 
+      const bookmarkName = bookmark?.name?.toLowerCase();
+
+      if(bookmarkName) { 
+        router.push(`/bookmarks/${bookmarkName}`)
+      }
+      else { 
+        alert("Bookmark name not found!");
       }
     } catch (error: any) {
       console.error("Login error:", error.response?.data || error.message);
