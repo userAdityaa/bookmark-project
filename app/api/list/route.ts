@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
-        const { name, icon, link, bookmarkId } = await request.json();
+        const { newItem, bookmarkId } = await request.json();
+        const { name, link, icon } = newItem
+        console.log(name, link, icon, bookmarkId)
 
-        if (!name || !icon || !link || !bookmarkId) {
+        if (!name || !icon || !bookmarkId) {
             return NextResponse.json(
                 { error: "Missing required fields: name, icon, link, or bookmarkId" },
                 { status: 400 }
