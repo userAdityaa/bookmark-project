@@ -1,6 +1,8 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { headers } from 'next/headers';
+import axios from 'axios';
 
 interface ListItem {
     icon: string; 
@@ -10,7 +12,9 @@ interface ListItem {
   }
 
 const BookmarkPage = () => {
-    const [user, setUser] = useState<string>(''); 
+    const [userName, setUserName] = useState<string>('');
+    const [userIcon, setUserIcon] = useState<string>('');
+    const [user, setUser] = useState<string>('');
     const [profile, setProfile] = useState<string>('');
     const [userGroup, setUserGroup] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState<string>(''); 
@@ -30,6 +34,17 @@ const BookmarkPage = () => {
     const domain = url.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
     return domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1);
     };
+    
+    useEffect(() => { 
+        const result = async() => { 
+            const response = await axios.get("http://localhost:3000/api/user", {
+                headers: {"Content-Type": "application/json"}
+            });
+            setUserName(response.data.user.name);
+            setUserIcon(response.data.user.icon);
+        }
+        result();
+    }, [])
 
     const handleAddResult = async () => {
         if (inputValue.trim()) {
