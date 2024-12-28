@@ -207,20 +207,20 @@ const BookmarkPage = () => {
                 </div>
 
                 {userNameOpen && (
-                    <div className="absolute top-12 right-5 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden">
-                    <div className="z-40"> 
-                        <button
-                        onClick={() => {
-                            handleLogout()
-                        }}
-                        className="z-50 flex items-center gap-3 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] hover:cursor-pointer"
-                        >
-                        <LogOut size={18} />
-                        <span className="text-[14px]">Log out</span>
-                        </button>
-                    </div>
-                    </div>
-                )}
+    <div className="absolute top-12 right-5 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden z-50">
+        <div className="z-40"> 
+            <button
+                onClick={() => {
+                    handleLogout()
+                }}
+                className="z-50 flex items-center gap-3 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] hover:cursor-pointer"
+            >
+                <LogOut size={18} />
+                <span className="text-[14px]">Log out</span>
+            </button>
+        </div>
+    </div>
+)}
             </nav>
     
             <div className='flex items-center py-8 relative flex-col gap-8'>
