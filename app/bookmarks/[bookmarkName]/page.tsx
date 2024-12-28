@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import axios from 'axios';
+import { LogOut } from 'lucide-react';
+import {useRouter} from 'next/navigation';
 
 interface ListItem {
     icon: string; 
@@ -23,6 +25,10 @@ const BookmarkPage = () => {
     const [bookmarkId, setBookmarkId] = useState<string>('');
     const [inputValue, setInputValue] = useState<string>(''); 
     const [results, setResults] = useState<ListItem[]>([]); 
+    const [bookmarkOpen, setBookmarkOpen] = useState<boolean>(false);
+    const [userNameOpen, setUserNameOpen] = useState<boolean>(false);
+
+    const router = useRouter();
 
     const isValidLink = (input: string): boolean => {
         const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/\S*)?$/;
@@ -119,19 +125,40 @@ const BookmarkPage = () => {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            const response = await axios.post("http://localhost:3000/api/auth/logout", {
+                headers: { "Content-Type": "application/json" },
+            });
+            if (response.status === 200) {
+                router.push("/login");
+            }
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleAddResult();
         }
     };
-    
+
+    const handleUsernameClick = () => { 
+        setUserNameOpen(!userNameOpen)
+    }
+
+    const handleBookmarkClick = () => { 
+        setBookmarkOpen(!bookmarkOpen);
+    }
+
     return (
         <>
             <nav className='flex justify-between items-center h-[2.5rem] mt-[1rem] w-[95vw] mx-auto'>
-                <div className='flex items-center'>
+                <div className='flex items-center relative'>
                     <Image src='/logo.png' alt='logo' height={0} width={40} />
                     <Image src='/backslash.png' alt='backslash' height={0} width={30} />
-                    <div className='flex items-center justify-center gap-2 hover:bg-[#343434] hover:rounded-3xl p-2'>
+                    <div className='flex items-center justify-center gap-2 hover:bg-[#343434] hover:rounded-3xl p-2' onClick={() => handleBookmarkClick()}>
                         {currentBookmark && (
                             <>
                                 <Image src={currentBookmark.icon} alt='bookmark-icon' height={0} width={18} />
@@ -140,12 +167,60 @@ const BookmarkPage = () => {
                         )}
                         <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
                     </div>
+
+                    {bookmarkOpen && (
+                    <div className="absolute top-full left-20 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden">
+                    <div className="py-1">
+                        {bookmarkList.map((bookmark, index) => (
+                        <div
+                            key={index}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-[#343434] hover:cursor-pointer"
+                            onClick={() => {
+                            }}
+                        >
+                            <Image src={bookmark.icon} alt="bookmark icon" height={0} width={18} />
+                            <span className="text-[#a0a0a0] text-[14px]">{bookmark.name}</span>
+                        </div>
+                        ))}
+                    </div>
+                    
+                    <div className="border-t border-zinc-700">
+                        <button
+                        className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-[14px]"
+                        >
+                        <span className="text-xl flex items-center">+</span> New Group
+                        </button>
+                        <button
+                        className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-[14px]"
+                        >
+                        <Image src="/delete_icon.svg" alt="delete" height={0} width={14} />
+                        Delete Group
+                        </button>
+                    </div>
+                    </div>
+                )}
                 </div>
-                <div className='flex items-center w-[7.5%] justify-center gap-2'>
+                <div className='flex items-center justify-center gap-2 relative hover:bg-[#343434] hover:rounded-3xl p-2' onClick={() => handleUsernameClick()}>
                     <Image src={userIcon} alt='user profile-icon' height={0} width={18} />
                     <p className='text-[#a0a0a0] font-light text-[14px] mb-[0.2rem]'>{userName}</p>
                     <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
                 </div>
+
+                {userNameOpen && (
+                    <div className="absolute top-12 right-5 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden">
+                    <div className="z-40"> 
+                        <button
+                        onClick={() => {
+                            handleLogout()
+                        }}
+                        className="z-50 flex items-center gap-3 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] hover:cursor-pointer"
+                        >
+                        <LogOut size={18} />
+                        <span className="text-[14px]">Log out</span>
+                        </button>
+                    </div>
+                    </div>
+                )}
             </nav>
     
             <div className='flex items-center py-8 relative flex-col gap-8'>
