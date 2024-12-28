@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { headers } from 'next/headers';
 import axios from 'axios';
 
 interface ListItem {
@@ -9,141 +8,199 @@ interface ListItem {
     name: string; 
     link: string; 
     createdAt: string;
-  }
+}
+
+const convertDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+}
 
 const BookmarkPage = () => {
     const [userName, setUserName] = useState<string>('');
     const [userIcon, setUserIcon] = useState<string>('');
-    const [user, setUser] = useState<string>('');
-    const [profile, setProfile] = useState<string>('');
-    const [userGroup, setUserGroup] = useState<string[]>([]);
+    const [bookmarkList, setBookmarkList] = useState<{ name: string; icon: string }[]>([]);
+    const [currentBookmark, setCurrentBookmark] = useState<{ name: string; icon: string } | null>(null);
+    const [bookmarkId, setBookmarkId] = useState<string>('');
     const [inputValue, setInputValue] = useState<string>(''); 
     const [results, setResults] = useState<ListItem[]>([]); 
 
     const isValidLink = (input: string): boolean => {
         const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/\S*)?$/;
         return urlPattern.test(input.trim());
-        };
+    };
 
     const formatDate = (date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+        const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
     };
 
     const extractDomainName = (url: string): string => {
-    const domain = url.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-    return domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1);
+        const domain = url.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
+        return domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1);
     };
-    
+
     useEffect(() => { 
-        const result = async() => { 
-            const response = await axios.get("http://localhost:3000/api/user", {
-                headers: {"Content-Type": "application/json"}
-            });
-            setUserName(response.data.user.name);
-            setUserIcon(response.data.user.icon);
-        }
-        result();
-    }, [])
+        const fetchData = async () => {
+            try {
+                const userResponse = await axios.get("http://localhost:3000/api/user", {
+                    headers: {"Content-Type": "application/json"}
+                });
+                const userData = userResponse.data.user;
+                setUserName(userData.name);
+                setUserIcon(userData.icon);
+
+                const bookmarkName = window.location.pathname.split('/').pop();
+                const bookmarkResponse = await axios.post(
+                    `http://localhost:3000/api/bookmarks/user/${userData.id}`, 
+                    { bookmarkName },
+                    { headers: { "Content-Type": "application/json" } }
+                );
+
+                const bookmarkData = {
+                    name: bookmarkResponse.data.name,
+                    icon: bookmarkResponse.data.icon,
+                };
+
+                setBookmarkList([bookmarkData]);
+                setCurrentBookmark(bookmarkData);
+                setBookmarkId(bookmarkResponse.data.id);
+
+                if (bookmarkResponse.data.listItems?.length > 0) { 
+                    setResults(bookmarkResponse.data.listItems);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleAddResult = async () => {
         if (inputValue.trim()) {
-          let newItem: ListItem;
-          const isURL = isValidLink(inputValue);
-          const createdAt = formatDate(new Date());
-      
-          if (isURL) {
-            const domainName = extractDomainName(inputValue);
-            newItem = {
-              icon: `https://logo.clearbit.com/${domainName.toLowerCase()}.com`,
-              name: domainName,
-              link: inputValue.trim(),
-              createdAt
-            };
-          } else {
-            newItem = {
-              icon: '/text_icon.svg',
-              name: inputValue.trim(),
-              link: '',
-              createdAt,
-            };
-          }
-      
-          setResults((prevResults) => [...prevResults, newItem]);
-          setInputValue('');
+            let newItem: ListItem;
+            const isURL = isValidLink(inputValue);
+            const createdAt = formatDate(new Date());
+        
+            if (isURL) {
+                const domainName = extractDomainName(inputValue);
+                newItem = {
+                    icon: `https://logo.clearbit.com/${domainName.toLowerCase()}.com` || '/default_link.svg',
+                    name: domainName,
+                    link: inputValue.trim(),
+                    createdAt,
+                };
+            } else {
+                newItem = {
+                    icon: '/text_icon.svg',
+                    name: inputValue.trim(),
+                    link: '',
+                    createdAt,
+                };
+            }
+        
+            try { 
+                const response = await axios.post(
+                    `http://localhost:3000/api/list`, 
+                    { newItem, bookmarkId }, 
+                    { headers: { "Content-Type": "application/json" } }
+                );
+                
+                if (response.status === 200) {
+                    setResults(prevResults => [...prevResults, response.data]);
+                } else {
+                    console.error('Failed to create list item');
+                }
+            } catch(error) { 
+                console.error('Error adding result:', error);
+                alert('Error adding result. Please try again.');
+            }
+            setInputValue('');
         }
-      };
+    };
 
-      const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-          if (event.key === 'Enter') {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
             handleAddResult();
-          }
-        };
-      
+        }
+    };
     
-  return (
-    <>
-          <nav className='flex justify-between items-center h-[2.5rem] mt-[1rem] w-[95vw] mx-auto'>
-            <div className='flex items-center'>
-              <Image src='/logo.png' alt='logo' height={0} width={40} />
-              <Image src='/backslash.png' alt='backslash' height={0} width={30} />
-              <div className='flex items-center justify-center gap-2'>
-                <Image src='/user-3.svg' alt='user-0' height={0} width={20} />
-                <p className='text-white'>{userGroup[0]}</p>
-                <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
-              </div>
-            </div>
-            <div className='flex items-center w-[7.5%] justify-center gap-2'>
-              <Image src={profile} alt='user profile-icon' height={0} width={20} />
-              <p className='text-[#f2f0f0b7] font-light text-[15px] mb-[0.2rem]'>{user}</p>
-              <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
-            </div>
-          </nav>
-    
-          <div className='flex items-center py-8 relative flex-col gap-8'>
-            <div className="relative w-[55vw]">
-              <input 
-                className='border border-zinc-700 bg-[#161616] hover:border-zinc-600 h-[3rem] w-full mx-auto rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-600 px-10 text-[#f0e5e57f] pl-12' 
-                type='text' 
-                placeholder='Insert a link, color, or just plain text...'
-                value={inputValue} 
-                onChange={(e) => setInputValue(e.target.value)} 
-                onKeyDown={handleKeyDown}
-              />
-              <Image 
-                src='/plus-icon.svg' 
-                alt='plus icon' 
-                height={0} 
-                width={25} 
-                className='absolute top-1/2 left-4 transform -translate-y-1/2 pointer-events-auto cursor-pointer'
-                onClick={handleAddResult}
-              />
-            </div>
-    
-            <div className='flex justify-between items-center border-b border-zinc-700 py-4 w-[55vw] text-[13px] text-[#a0a0a0]'>
-              <div className='flex items-center justify-between w-full'>
-                <p>Title</p>
-                <p>Created At</p>
-              </div>
-            </div>
-    
-            <div className='w-[55vw]'>
-              {results.map((result, index) => (
-                <div key={index} className='py-2 text-zinc-300 flex items-center gap-2 justify-between'>
-                  <div className='flex items-center gap-2'>
-                  <Image src={result.icon} alt='result icon' height={20} width={18}></Image>
-                  <p>{result.name}</p>
-                  {result.link != '' && 
-                  <p className='text-[14px] text-[#a0a0a0]'>{result.link}</p>
-                  } 
-                  </div>
-                  <p className='text-[13px] text-[#a0a0a0]'>{result.createdAt}</p>
+    return (
+        <>
+            <nav className='flex justify-between items-center h-[2.5rem] mt-[1rem] w-[95vw] mx-auto'>
+                <div className='flex items-center'>
+                    <Image src='/logo.png' alt='logo' height={0} width={40} />
+                    <Image src='/backslash.png' alt='backslash' height={0} width={30} />
+                    <div className='flex items-center justify-center gap-2 hover:bg-[#343434] hover:rounded-3xl p-2'>
+                        {currentBookmark && (
+                            <>
+                                <Image src={currentBookmark.icon} alt='bookmark-icon' height={0} width={18} />
+                                <p className='text-[#a0a0a0] text-[14px]'>{currentBookmark.name}</p>
+                            </>
+                        )}
+                        <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
+                    </div>
                 </div>
-              ))}
+                <div className='flex items-center w-[7.5%] justify-center gap-2'>
+                    <Image src={userIcon} alt='user profile-icon' height={0} width={18} />
+                    <p className='text-[#a0a0a0] font-light text-[14px] mb-[0.2rem]'>{userName}</p>
+                    <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
+                </div>
+            </nav>
+    
+            <div className='flex items-center py-8 relative flex-col gap-8'>
+                <div className="relative w-[55vw] mt-14">
+                    <input 
+                        className='border border-zinc-700 bg-[#161616] hover:border-zinc-600 h-[3rem] w-full mx-auto rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-600 px-10 text-[#f0e5e57f] pl-12' 
+                        type='text' 
+                        placeholder='Insert a link, color, or just plain text...'
+                        value={inputValue} 
+                        onChange={(e) => setInputValue(e.target.value)} 
+                        onKeyDown={handleKeyDown}
+                    />
+                    <Image 
+                        src='/plus-icon.svg' 
+                        alt='plus icon' 
+                        height={0} 
+                        width={25} 
+                        className='absolute top-1/2 left-4 transform -translate-y-1/2 pointer-events-auto cursor-pointer'
+                        onClick={handleAddResult}
+                    />
+                </div>
+    
+                <div className='flex justify-between items-center border-b border-zinc-700 py-4 w-[55vw] text-[13px] text-[#a0a0a0]'>
+                    <div className='flex items-center justify-between w-full'>
+                        <p>Title</p>
+                        <p>Created At</p>
+                    </div>
+                </div>
+    
+                <div className='w-[55vw]'>
+                    {results.map((result, index) => (
+                        <div 
+                            key={index} 
+                            className='py-2 text-zinc-300 flex items-center gap-2 justify-between hover:bg-[#343434] hover:px-2 hover:rounded-lg cursor-pointer'
+                            onClick={() => {
+                                if (result.link) {
+                                    const url = result.link.startsWith('http') ? result.link : `http://${result.link}`;
+                                    window.open(url, '_blank');
+                                }
+                            }}
+                        >
+                            <div className='flex items-center gap-2'>
+                                <Image src={result.icon} alt='result icon' height={20} width={18} />
+                                <p>{result.name}</p>
+                                {result.link !== '' && 
+                                    <p className='text-[14px] text-[#a0a0a0]'>{result.link}</p>
+                                }
+                            </div>
+                            <p className='text-[13px] text-[#a0a0a0]'>{convertDate(result.createdAt)}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
         </>
-  )
+    );
 }
 
 export default BookmarkPage
