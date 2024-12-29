@@ -50,3 +50,43 @@ export async function GET(
     }
 }
 
+export async function POST ( req: Request, 
+    {params}: {params: {id: string}}
+) { 
+    const {bookmarkName} = await req.json();
+    const userId = parseInt(params.id)
+
+    if(!bookmarkName || !userId) { 
+        return NextResponse.json({error: "Bookmark name or user Id not found"}, { status: 400 })
+    }
+    try { 
+        const existingBookmark = await prisma.bookmark.findFirst({
+            where: {
+                name: bookmarkName, 
+                userId: userId
+            }
+        });
+
+        if(existingBookmark) { 
+            return NextResponse.json(
+                { error: "A bookmark with this name already exists" },
+                { status: 409 }
+            );
+        }
+
+        const value = Math.floor(Math.random() * 6) + 1;
+        const assetIcon = `/user-${value}.svg`
+
+        const newBookmark = await prisma.bookmark.create({
+            data: {
+                name: bookmarkName, 
+                icon: assetIcon,
+                userId: userId
+            }
+        });
+
+        return NextResponse.json(newBookmark, { status: 200 });
+    } catch (error) { 
+        return NextResponse.json({error: "Error Creating Bookmark"}, {status: 500})
+    }
+}
