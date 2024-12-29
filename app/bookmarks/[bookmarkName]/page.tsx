@@ -4,6 +4,7 @@ import Image from 'next/image'
 import axios from 'axios';
 import { LogOut } from 'lucide-react';
 import {useRouter} from 'next/navigation';
+import { NewGroupDialog } from '@/app/components';
 
 interface ListItem {
     icon: string; 
@@ -20,6 +21,7 @@ const convertDate = (dateString: string) => {
 const BookmarkPage = () => {
     const [userName, setUserName] = useState<string>('');
     const [userIcon, setUserIcon] = useState<string>('');
+    const [userId, setUserId] = useState<string>('');
     const [bookmarkList, setBookmarkList] = useState<{ name: string; icon: string }[]>([]);
     const [currentBookmark, setCurrentBookmark] = useState<{ name: string; icon: string } | null>(null);
     const [bookmarkId, setBookmarkId] = useState<string>('');
@@ -27,8 +29,23 @@ const BookmarkPage = () => {
     const [results, setResults] = useState<ListItem[]>([]); 
     const [bookmarkOpen, setBookmarkOpen] = useState<boolean>(false);
     const [userNameOpen, setUserNameOpen] = useState<boolean>(false);
+    const [newGroupDialogOpen, setNewGroupDialogOpen] = useState(false);
 
     const router = useRouter();
+
+    const handleNewGroup = async (name: string) => { 
+        try { 
+            const response = await axios.post(`http://localhost:3000/api/bookmarks/${userId}`, {bookmarkName: name}, {
+                headers: {"Content-Type": "application/json"}
+            })
+            console.log("Response data: ", response.data);
+            setNewGroupDialogOpen(false);
+            window.location.reload();
+        } catch (error) { 
+            console.error('Error creating new bookmark:', error);
+            alert('Failed to create new bookmark. Please try again.');
+        }
+    }
 
     const isValidLink = (input: string): boolean => {
         const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/\S*)?$/;
@@ -54,6 +71,7 @@ const BookmarkPage = () => {
                 const userData = userResponse.data.user;
                 setUserName(userData.name);
                 setUserIcon(userData.icon);
+                setUserId(userData.id);
 
                 const bookmarkName = window.location.pathname.split('/').pop();
                 const bookmarkResponse = await axios.post(
@@ -67,13 +85,24 @@ const BookmarkPage = () => {
                     icon: bookmarkResponse.data.icon,
                 };
 
-                setBookmarkList([bookmarkData]);
                 setCurrentBookmark(bookmarkData);
                 setBookmarkId(bookmarkResponse.data.id);
 
                 if (bookmarkResponse.data.listItems?.length > 0) { 
                     setResults(bookmarkResponse.data.listItems);
                 }
+
+                const bookmarkListResponse = await axios.get(
+                    `http://localhost:3000/api/user/${userData.id}`, 
+                    { headers: { "Content-Type": "application/json" } }
+                );
+
+                const bookmarks = bookmarkListResponse.data.map((bookmark: any) => ({
+                    name: bookmark.name,
+                    icon: bookmark.icon,
+                }));
+                
+                setBookmarkList(bookmarks)
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -168,37 +197,41 @@ const BookmarkPage = () => {
                         <Image src='/arrow-key.svg' alt='arrow key' height={0} width={20} />
                     </div>
 
-                    {bookmarkOpen && (
-                    <div className="absolute top-full left-20 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden">
-                    <div className="py-1">
-                        {bookmarkList.map((bookmark, index) => (
-                        <div
-                            key={index}
-                            className="flex items-center gap-2 px-4 py-2 hover:bg-[#343434] hover:cursor-pointer"
-                            onClick={() => {
-                            }}
-                        >
-                            <Image src={bookmark.icon} alt="bookmark icon" height={0} width={18} />
-                            <span className="text-[#a0a0a0] text-[14px]">{bookmark.name}</span>
+                {bookmarkOpen && (
+                    <div className="absolute top-full left-20 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden z-50">
+                        <div className="py-1 z-40">
+                            {bookmarkList.map((bookmark, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex items-center gap-2 px-4 py-2 hover:bg-[#343434] hover:cursor-pointer ${
+                                        currentBookmark?.name === bookmark.name ? 'bg-[#2e2e2e]' : ''
+                                    }`}
+                                    onClick={() => {
+                                        if (currentBookmark?.name !== bookmark.name) {
+                                            setCurrentBookmark(bookmark); // Update the current bookmark
+                                            router.push(`/bookmarks/${bookmark.name}`); // Navigate to the new route
+                                        }
+                                    }}
+                                >
+                                    <Image
+                                        src={bookmark.icon}
+                                        alt="bookmark icon"
+                                        height={0}
+                                        width={18}
+                                    />
+                                    <span className="text-[#a0a0a0] text-[14px]">{bookmark.name}</span>
+                                </div>
+                            ))}
                         </div>
-                        ))}
-                    </div>
-                    
-                    <div className="border-t border-zinc-700">
-                        <button
-                        className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-[14px]"
-                        >
-                        <span className="text-xl flex items-center">+</span> New Group
-                        </button>
-                        <button
-                        className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-[14px]"
-                        >
-                        <Image src="/delete_icon.svg" alt="delete" height={0} width={14} />
-                        Delete Group
-                        </button>
-                    </div>
                     </div>
                 )}
+
+                <NewGroupDialog
+                    open={newGroupDialogOpen}
+                    onOpenChange={setNewGroupDialogOpen}
+                    onSubmit={handleNewGroup}
+                />
+
                 </div>
                 <div className='flex items-center justify-center gap-2 relative hover:bg-[#343434] hover:rounded-3xl p-2' onClick={() => handleUsernameClick()}>
                     <Image src={userIcon} alt='user profile-icon' height={0} width={18} />
@@ -207,20 +240,20 @@ const BookmarkPage = () => {
                 </div>
 
                 {userNameOpen && (
-    <div className="absolute top-12 right-5 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden z-50">
-        <div className="z-40"> 
-            <button
-                onClick={() => {
-                    handleLogout()
-                }}
-                className="z-50 flex items-center gap-3 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] hover:cursor-pointer"
-            >
-                <LogOut size={18} />
-                <span className="text-[14px]">Log out</span>
-            </button>
-        </div>
-    </div>
-)}
+                    <div className="absolute top-12 right-5 mt-2 w-48 bg-[#1e1e1e] rounded-lg shadow-lg border border-zinc-700 overflow-hidden z-50">
+                        <div className="z-40"> 
+                            <button
+                                onClick={() => {
+                                    handleLogout()
+                                }}
+                                className="z-50 flex items-center gap-3 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] hover:cursor-pointer"
+                            >
+                                <LogOut size={18} />
+                                <span className="text-[14px]">Log out</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </nav>
     
             <div className='flex items-center py-8 relative flex-col gap-8'>
