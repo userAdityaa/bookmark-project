@@ -1,85 +1,65 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-const NewGroupDialog = ({ open, onOpenChange, onCreateGroup }) => {
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
+interface NewGroupDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (name: string) => void;
+}
 
-  const handleNameChange = (e: any) => {
-    const newName = e.target.value
-    setName(newName)
-    // Auto-generate slug from name
-    setSlug(newName.toLowerCase().replace(/\s+/g, '-'))
-  }
+const NewGroupDialog: React.FC<NewGroupDialogProps> = ({ open, onOpenChange, onSubmit }) => {
+  const [name, setName] = useState("");
 
   const handleSubmit = () => {
-    onCreateGroup({ name, slug })
-    setName('')
-    setSlug('')
-    onOpenChange(false)
-  }
+    if (name.trim()) {
+      onSubmit(name);
+      setName("");
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#161616] border-zinc-700 sm:max-w-[425px]">
+      <DialogContent className="bg-[#1e1e1e] border-zinc-700">
         <DialogHeader>
-          <DialogTitle className="text-zinc-200">Create new group</DialogTitle>
+          <DialogTitle className="text-zinc-400">Create new group</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name" className="text-zinc-400">
-              Name
-            </Label>
+        <div className="py-4">
+          <div className="space-y-2">
+            <label className="text-sm text-zinc-400">Name</label>
             <Input
-              id="name"
               value={name}
-              onChange={handleNameChange}
-              className="bg-[#161616] border-zinc-700 text-zinc-200"
-              placeholder="Design"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="slug" className="text-zinc-400">
-              Slug
-            </Label>
-            <Input
-              id="slug"
-              value={slug}
-              onChange={(e: any) => setSlug(e.target.value)}
-              className="bg-[#161616] border-zinc-700 text-zinc-200"
-              placeholder="design"
+              onChange={(e) => setName(e.target.value)}
+              className="bg-[#161616] border-zinc-700 text-zinc-400"
+              placeholder="Enter group name"
             />
           </div>
         </div>
         <DialogFooter>
           <Button
-            type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="bg-transparent border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+            className="bg-transparent hover:bg-zinc-800 text-zinc-400 border-none hover:text-zinc-400"
           >
             Cancel
           </Button>
           <Button
-            type="submit"
             onClick={handleSubmit}
-            className="bg-zinc-200 text-zinc-900 hover:bg-zinc-300"
+            className="bg-[#161616] text-zinc-400 hover:bg-zinc-800"
           >
             Create
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default NewGroupDialog
+export default NewGroupDialog;
