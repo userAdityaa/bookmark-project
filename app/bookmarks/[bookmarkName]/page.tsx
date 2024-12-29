@@ -35,7 +35,7 @@ const BookmarkPage = () => {
 
     const handleNewGroup = async (name: string) => { 
         try { 
-            const response = await axios.post(`http://localhost:3000/api/bookmarks/${userId}`, {bookmarkName: name}, {
+            const response = await axios.post(`https://bkmarks.vercel.app/api/bookmarks/${userId}`, {bookmarkName: name}, {
                 headers: {"Content-Type": "application/json"}
             })
             console.log("Response data: ", response.data);
@@ -65,7 +65,7 @@ const BookmarkPage = () => {
     useEffect(() => { 
         const fetchData = async () => {
             try {
-                const userResponse = await axios.get("http://localhost:3000/api/user", {
+                const userResponse = await axios.get("https://bkmarks.vercel.app/api/user", {
                     headers: {"Content-Type": "application/json"}
                 });
                 const userData = userResponse.data.user;
@@ -75,7 +75,7 @@ const BookmarkPage = () => {
 
                 const bookmarkName = window.location.pathname.split('/').pop();
                 const bookmarkResponse = await axios.post(
-                    `http://localhost:3000/api/bookmarks/user/${userData.id}`, 
+                    `https://bkmarks.vercel.app/api/bookmarks/user/${userData.id}`, 
                     { bookmarkName },
                     { headers: { "Content-Type": "application/json" } }
                 );
@@ -93,7 +93,7 @@ const BookmarkPage = () => {
                 }
 
                 const bookmarkListResponse = await axios.get(
-                    `http://localhost:3000/api/user/${userData.id}`, 
+                    `https://bkmarks.vercel.app/api/user/${userData.id}`, 
                     { headers: { "Content-Type": "application/json" } }
                 );
 
@@ -136,7 +136,7 @@ const BookmarkPage = () => {
         
             try { 
                 const response = await axios.post(
-                    `http://localhost:3000/api/list`, 
+                    `https://bkmarks.vercel.app/api/list`, 
                     { newItem, bookmarkId }, 
                     { headers: { "Content-Type": "application/json" } }
                 );
@@ -156,7 +156,7 @@ const BookmarkPage = () => {
 
     const handleLogout = async () => {
         try {
-            const response = await axios.post("http://localhost:3000/api/auth/logout", {
+            const response = await axios.post("https://bkmarks.vercel.app/api/auth/logout", {
                 headers: { "Content-Type": "application/json" },
             });
             if (response.status === 200) {

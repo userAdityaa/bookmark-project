@@ -15,14 +15,14 @@ export default function SignIn() {
     e.preventDefault(); 
 
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/login", 
+      const response = await axios.post("https://bkmarks.vercel.app/api/auth/login", 
         { email, password },  
         { headers: { 'Content-Type': 'application/json' } }
       );
 
       const userId = response.data.user.id;
 
-      const bookmarkResponse = await axios.get(`http://localhost:3000/api/bookmarks/user/${userId}`, 
+      const bookmarkResponse = await axios.get(`https://bkmarks.vercel.app/api/bookmarks/user/${userId}`, 
         {headers: {'Content-Type': 'application/json'}}
       );
 
