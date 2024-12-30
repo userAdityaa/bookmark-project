@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import axios from 'axios';
-import { LogOut } from 'lucide-react';
+import { LogOut, Plus, Trash2 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import { NewGroupDialog } from '@/app/components';
 
@@ -181,6 +181,10 @@ const BookmarkPage = () => {
         setBookmarkOpen(!bookmarkOpen);
     }
 
+    const handleGroup = () => { 
+        setNewGroupDialogOpen(true);
+    }
+
     return (
         <>
             <nav className='flex justify-between items-center h-[2.5rem] mt-[1rem] w-[95vw] mx-auto'>
@@ -208,8 +212,8 @@ const BookmarkPage = () => {
                                     }`}
                                     onClick={() => {
                                         if (currentBookmark?.name !== bookmark.name) {
-                                            setCurrentBookmark(bookmark); // Update the current bookmark
-                                            router.push(`/bookmarks/${bookmark.name}`); // Navigate to the new route
+                                            setCurrentBookmark(bookmark);
+                                            router.push(`/bookmarks/${bookmark.name}`); 
                                         }
                                     }}
                                 >
@@ -223,7 +227,23 @@ const BookmarkPage = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
+
+                        <div className="h-px bg-zinc-700 my-1" />
+                            <button
+                            className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-sm"
+                            onClick={handleGroup}
+                            >
+                            <Plus className="w-4 h-4" />
+                            New Group
+                            </button>
+                            
+                            <button
+                            className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-sm"
+                            >
+                            <Trash2 className="w-4 h-4" />
+                            Delete Group
+                            </button>
+                        </div>
                 )}
 
                 <NewGroupDialog
