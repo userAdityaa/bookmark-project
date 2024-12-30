@@ -346,7 +346,7 @@ const BookmarkPage = () => {
                                         className="w-6 h-6 rounded-full"
                                     ></div>
                                 ) : (
-                                    <Image src={result.icon} alt="result icon" height={20} width={18} className={result.icon === '/default_link.svg' ? '' : 'rounded-full'} />
+                                    <Image src={result.icon} alt="result icon" height={20} width={18} />
                                 )}
                                 <p>
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
