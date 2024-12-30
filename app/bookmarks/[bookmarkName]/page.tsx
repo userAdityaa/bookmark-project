@@ -125,28 +125,8 @@ const BookmarkPage = () => {
             const isURL = isValidLink(inputValue);
             const createdAt = formatDate(new Date());
             const isColorCode = /^#[0-9A-Fa-f]{6}$/i.test(inputValue.trim());
-            
-            if (isColorCode) {
-                try {
-                    const colorResponse = await fetch(`https://www.colorhexa.com/${inputValue.trim().substring(1)}`);
-                    const colorData = await colorResponse.json();
-    
-                    newItem = {
-                        icon: '/color_icon.svg', 
-                        name: colorData.name || inputValue.trim(), 
-                        link: inputValue.trim(),  
-                        createdAt,
-                    };
-                } catch (error) {
-                    console.error('Error fetching color data:', error);
-                    newItem = {
-                        icon: '/default_link.svg', 
-                        name: inputValue.trim(),    
-                        link: '',
-                        createdAt,
-                    };
-                }
-            } else if (isURL) {
+
+            if (isURL) {
                 const domainName = extractDomainName(inputValue);
                 const iconUrl = `https://logo.clearbit.com/${domainName.toLowerCase()}.com`;
                 const isValidIcon = await fetch(iconUrl)
@@ -342,7 +322,11 @@ const BookmarkPage = () => {
                 </div>
     
                 <div className='w-[55vw]'>
-                    {results.map((result, index) => (
+                {results.map((result, index) => {
+                    // Check if result.name is a hex color code
+                    const isColor = /^#[0-9A-Fa-f]{6}$/i.test(result.name);
+
+                    return (
                         <div 
                             key={index} 
                             className='py-2 text-zinc-300 flex items-center gap-2 justify-between hover:bg-[#343434] hover:px-2 hover:rounded-lg cursor-pointer'
@@ -356,7 +340,14 @@ const BookmarkPage = () => {
                             }}
                         >
                             <div className='flex items-center gap-2'>
-                                <Image src={result.icon} alt='result icon' height={20} width={18} className={/^#[0-9A-Fa-f]{6}$/i.test(result.icon) ? 'rounded-full' : ''} />
+                                {isColor ? (
+                                    <div
+                                        style={{ backgroundColor: result.name }}
+                                        className="w-6 h-6 rounded-full"
+                                    ></div>
+                                ) : (
+                                    <Image src={result.icon} alt="result icon" height={20} width={18} className={result.icon === '/default_link.svg' ? '' : 'rounded-full'} />
+                                )}
                                 <p>
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
@@ -366,7 +357,8 @@ const BookmarkPage = () => {
                             </div>
                             <p className='text-[13px] text-[#a0a0a0]'>{convertDate(result.createdAt)}</p>
                         </div>
-                    ))}
+                    );
+                })}
                 </div>
             </div>
         </>
