@@ -127,12 +127,16 @@ const BookmarkPage = () => {
         
             if (isURL) {
                 const domainName = extractDomainName(inputValue);
+                const iconUrl = `https://logo.clearbit.com/${domainName.toLowerCase()}.com`;
+                const isValidIcon = await fetch(iconUrl)
+                .then((response) => response.ok)
+                .catch(() => false);
                 newItem = {
-                    icon: `https://logo.clearbit.com/${domainName.toLowerCase()}.com` || '/default_link.svg',
+                    icon: isValidIcon ? iconUrl : '/default_link.svg',
                     name: domainName,
                     link: inputValue.trim(),
                     createdAt,
-                };
+                  };
             } else {
                 newItem = {
                     icon: '/text_icon.svg',
@@ -330,7 +334,7 @@ const BookmarkPage = () => {
                             }}
                         >
                             <div className='flex items-center gap-2'>
-                                <Image src={result.icon} alt='result icon' height={20} width={18} onError={(e) => e.currentTarget.src = '/default_icon.svg'}/>
+                                <Image src={result.icon} alt='result icon' height={20} width={18}/>
                                 <p>
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
