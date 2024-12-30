@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { hashPassword } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma?.user.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: { email }
     })
 
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     const value = Math.floor(Math.random() * 6) + 1;
     const assetIcon = `/user-${value}.svg`
 
-    const result = await prisma?.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           name,
