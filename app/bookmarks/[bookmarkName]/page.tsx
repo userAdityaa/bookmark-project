@@ -330,7 +330,7 @@ const BookmarkPage = () => {
                             }}
                         >
                             <div className='flex items-center gap-2'>
-                                <Image src={result.icon} alt='result icon' height={20} width={18} />
+                                <Image src={result.icon} alt='result icon' height={20} width={18} onError={(e) => e.currentTarget.src = '/default_icon.svg'}/>
                                 <p>
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
