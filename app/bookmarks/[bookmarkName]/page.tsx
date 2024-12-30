@@ -185,6 +185,10 @@ const BookmarkPage = () => {
         setNewGroupDialogOpen(true);
     }
 
+    const  truncateText = (text: string, maxLength: number): string => {
+        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+    }
+    
     return (
         <>
             <nav className='flex justify-between items-center h-[2.5rem] mt-[1rem] w-[95vw] mx-auto'>
@@ -317,7 +321,7 @@ const BookmarkPage = () => {
                         >
                             <div className='flex items-center gap-2'>
                                 <Image src={result.icon} alt='result icon' height={20} width={18} />
-                                <p>{result.name}</p>
+                                <p>{truncateText(result.name, 35)}</p>
                                 {result.link !== '' && 
                                     <p className='text-[14px] text-[#a0a0a0]'>{result.link}</p>
                                 }
