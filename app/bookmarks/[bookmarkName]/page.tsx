@@ -124,19 +124,41 @@ const BookmarkPage = () => {
             let newItem: ListItem;
             const isURL = isValidLink(inputValue);
             const createdAt = formatDate(new Date());
-        
-            if (isURL) {
+            const isColorCode = /^#[0-9A-Fa-f]{6}$/i.test(inputValue.trim());
+            
+            if (isColorCode) {
+                try {
+                    const colorResponse = await fetch(`https://www.colorhexa.com/${inputValue.trim().substring(1)}.json`);
+                    const colorData = await colorResponse.json();
+    
+                    newItem = {
+                        icon: '/color_icon.svg', 
+                        name: colorData.name || inputValue.trim(), 
+                        link: inputValue.trim(),  
+                        createdAt,
+                    };
+                } catch (error) {
+                    console.error('Error fetching color data:', error);
+                    newItem = {
+                        icon: '/default_link.svg', 
+                        name: inputValue.trim(),    
+                        link: '',
+                        createdAt,
+                    };
+                }
+            } else if (isURL) {
                 const domainName = extractDomainName(inputValue);
                 const iconUrl = `https://logo.clearbit.com/${domainName.toLowerCase()}.com`;
                 const isValidIcon = await fetch(iconUrl)
-                .then((response) => response.ok)
-                .catch(() => false);
+                    .then((response) => response.ok)
+                    .catch(() => false);
+    
                 newItem = {
                     icon: isValidIcon ? iconUrl : '/default_link.svg',
                     name: domainName,
                     link: inputValue.trim(),
                     createdAt,
-                  };
+                };
             } else {
                 newItem = {
                     icon: '/text_icon.svg',
@@ -334,7 +356,7 @@ const BookmarkPage = () => {
                             }}
                         >
                             <div className='flex items-center gap-2'>
-                                <Image src={result.icon} alt='result icon' height={20} width={18}/>
+                                <Image src={result.icon} alt='result icon' height={20} width={18} className={/^#[0-9A-Fa-f]{6}$/i.test(result.icon) ? 'rounded-full' : ''} />
                                 <p>
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
