@@ -30,6 +30,7 @@ const BookmarkPage = () => {
     const [bookmarkOpen, setBookmarkOpen] = useState<boolean>(false);
     const [userNameOpen, setUserNameOpen] = useState<boolean>(false);
     const [newGroupDialogOpen, setNewGroupDialogOpen] = useState(false);
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const router = useRouter();
 
@@ -60,6 +61,13 @@ const BookmarkPage = () => {
     const extractDomainName = (url: string): string => {
         const domain = url.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
         return domain.split('.')[0].charAt(0).toUpperCase() + domain.split('.')[0].slice(1);
+    };
+
+    const handleCopy = (text: string, index: number) => {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopiedIndex(index);
+            setTimeout(() => setCopiedIndex(null), 1000); 
+        });
     };
 
     useEffect(() => { 
@@ -316,12 +324,16 @@ const BookmarkPage = () => {
                                 if (result.link) {
                                     const url = result.link.startsWith('http') ? result.link : `http://${result.link}`;
                                     window.open(url, '_blank');
+                                } else { 
+                                    handleCopy(result.name, index);
                                 }
                             }}
                         >
                             <div className='flex items-center gap-2'>
                                 <Image src={result.icon} alt='result icon' height={20} width={18} />
-                                <p>{truncateText(result.name, 35)}</p>
+                                <p>
+                                    {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
+                                </p>
                                 {result.link !== '' && 
                                     <p className='text-[14px] text-[#a0a0a0]'>{result.link}</p>
                                 }
