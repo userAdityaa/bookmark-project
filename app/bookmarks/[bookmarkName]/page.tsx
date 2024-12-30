@@ -128,7 +128,7 @@ const BookmarkPage = () => {
             
             if (isColorCode) {
                 try {
-                    const colorResponse = await fetch(`https://www.colorhexa.com/${inputValue.trim().substring(1)}.json`);
+                    const colorResponse = await fetch(`https://www.colorhexa.com/${inputValue.trim().substring(1)}`);
                     const colorData = await colorResponse.json();
     
                     newItem = {
