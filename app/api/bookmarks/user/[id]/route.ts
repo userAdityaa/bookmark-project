@@ -1,3 +1,4 @@
+import { deleteBookmarkAndItems } from "@/app/utils/deleteAllList";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -71,53 +72,72 @@ export async function POST(request: Request,
   }
 }
 
-export async function DELETE (request: Request, 
-  {params}: {params: {id: string}}
-) { 
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-  const {bookmarkName} = await request.json(); 
-  const userId = params.id;
+    const { bookmarkName } = await request.json();
+    const userId = params.id;
 
-  console.log(bookmarkName)
+    // Input validation
+    if (!userId || !bookmarkName) {
+      return NextResponse.json(
+        { error: "User ID or Bookmark Name missing" },
+        { status: 400 }
+      );
+    }
 
-  if (!userId || !bookmarkName) {
-    return NextResponse.json({ error: "User ID or Bookmark Name missing" }, { status: 400 });
-  }
+    // Find the bookmark to delete
+    const bookmarkToDelete = await prisma.bookmark.findFirst({
+      where: {
+        userId: parseInt(userId),
+        name: bookmarkName,
+      },
+    });
 
-  const bookmarkToDelete = await prisma.bookmark.findFirst({
-    where: {
-      userId: parseInt(userId),
-      name: bookmarkName,
-    },
-  });
+    // Check if bookmark exists
+    if (!bookmarkToDelete) {
+      return NextResponse.json(
+        { error: "Bookmark not found" },
+        { status: 404 }
+      );
+    }
 
-  if (!bookmarkToDelete) {
+    // Delete the bookmark and its items
+    await deleteBookmarkAndItems(bookmarkToDelete.id, parseInt(userId));
+
+    // Find the next bookmark to redirect to
+    const nextBookmark = await prisma.bookmark.findFirst({
+      where: { 
+        userId: parseInt(userId),
+        NOT: {
+          id: bookmarkToDelete.id
+        }
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    // If no bookmarks left, return success message
+    if (!nextBookmark) {
+      return NextResponse.json(
+        { message: "Bookmark deleted. No remaining bookmarks." },
+        { status: 200 }
+      );
+    }
+
+    // Return redirect URL
+    const redirectUrl = `/bookmarks/${nextBookmark.name}`;
     return NextResponse.json(
-      { error: "Bookmark not found" },
-      { status: 404 }
+      { redirect: redirectUrl },
+      { status: 200 }
     );
-  }
 
-  await prisma.bookmark.delete({
-    where: {
-      id: bookmarkToDelete.id,
-    },
-  });
-
-  const firstBookmark = await prisma.bookmark.findFirst({
-    where: { userId: parseInt(userId) },
-    orderBy: { createdAt: "asc" }, 
-  });
-
-  if (!firstBookmark) {
-    return NextResponse.json({ message: "No bookmarks found" }, { status: 200 });
-  }
-  return NextResponse.redirect(`/bookmarks/${firstBookmark.name}`);
-} catch(error) { 
-  console.error("Error in DELETE function:", error);
+  } catch (error) {
+    console.error("Error in DELETE function:", error);
     return NextResponse.json(
       { error: "Failed to delete the bookmark" },
       { status: 500 }
     );
-}
+  }
 }
