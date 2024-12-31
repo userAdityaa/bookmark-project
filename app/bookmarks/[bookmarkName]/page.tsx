@@ -4,7 +4,7 @@ import Image from 'next/image'
 import axios from 'axios';
 import { LogOut, Plus, Trash2 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
-import { NewGroupDialog } from '@/app/components';
+import { BookmarkMenu, NewGroupDialog } from '@/app/components';
 
 interface ListItem {
     icon: string; 
@@ -282,6 +282,16 @@ const BookmarkPage = () => {
                             </button>
                         </div>
                 )}
+
+                <BookmarkMenu 
+                bookmarkOpen={bookmarkOpen}
+                setBookmarkOpen={setBookmarkOpen}
+                bookmarkList={bookmarkList}
+                currentBookmark={currentBookmark}
+                setCurrentBookmark={setCurrentBookmark}
+                handleGroup={handleGroup}
+                handleDeleteGroup={handleDeleteGroup}
+                />
 
                 <NewGroupDialog
                     open={newGroupDialogOpen}
