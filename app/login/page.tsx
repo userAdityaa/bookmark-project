@@ -1,19 +1,24 @@
 'use client'
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { LoadingScreen } from '../components';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    LoadingScreen();
+  }, [isLoading]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault(); 
-
     try {
       const response = await axios.post("https://bkmarks.vercel.app/api/auth/login", 
         { email, password },  
@@ -30,6 +35,7 @@ export default function SignIn() {
       const bookmarkName = bookmark?.name?.toLowerCase();
 
       if(bookmarkName) { 
+        setIsLoading(true);
         router.push(`/bookmarks/${bookmarkName}`)
       }
       else { 
