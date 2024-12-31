@@ -386,7 +386,7 @@ const BookmarkPage = () => {
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
                                 {result.link !== '' && 
-                                <p className='text-[14px] text-[#a0a0a0] sm:max-w-[18ch] sm:truncate'>
+                                <p className='text-[14px] text-[#a0a0a0] max-sm:max-w-[15ch] max-sm:truncate'>
                                     {result.link}
                                 </p>
                                 }
