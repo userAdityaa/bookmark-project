@@ -330,7 +330,7 @@ const BookmarkPage = () => {
             </nav>
     
             <div className='flex items-center py-8 relative flex-col gap-8'>
-                <div className="relative w-[55vw] mt-14">
+                <div className="relative w-[55vw] mt-14 max-sm:w-[92vw]">
                     <input 
                         className='border border-zinc-700 bg-[#161616] hover:border-zinc-600 h-[3rem] w-full mx-auto rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-600 px-10 text-[#f0e5e57f] pl-12' 
                         type='text' 
@@ -349,16 +349,15 @@ const BookmarkPage = () => {
                     />
                 </div>
     
-                <div className='flex justify-between items-center border-b border-zinc-700 py-4 w-[55vw] text-[13px] text-[#a0a0a0]'>
+                <div className='flex justify-between items-center border-b border-zinc-700 py-4 w-[55vw] text-[13px] text-[#a0a0a0] max-sm:w-[92vw]'>
                     <div className='flex items-center justify-between w-full'>
                         <p>Title</p>
                         <p>Created At</p>
                     </div>
                 </div>
     
-                <div className='w-[55vw]'>
+                <div className='w-[55vw] max-sm:w-[92vw]'>
                 {results.map((result, index) => {
-                    // Check if result.name is a hex color code
                     const isColor = /^#[0-9A-Fa-f]{6}$/i.test(result.name);
 
                     return (
