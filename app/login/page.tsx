@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -12,10 +12,6 @@ export default function SignIn() {
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    LoadingScreen();
-  }, [isLoading]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault(); 
@@ -51,6 +47,7 @@ export default function SignIn() {
   return (
     <section className="bg-[#161616]">
       <Image src='/logo.png' alt='logo icon' height={0} width={40} className='absolute top-5 left-5'></Image>
+      {isLoading && <LoadingScreen />}
       <div className="flex flex-col items-center mt-[8rem] px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
