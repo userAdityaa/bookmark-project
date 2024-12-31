@@ -107,32 +107,14 @@ export async function DELETE(
     // Delete the bookmark and its items
     await deleteBookmarkAndItems(bookmarkToDelete.id, parseInt(userId));
 
-    // Find the next bookmark to redirect to
-    const nextBookmark = await prisma.bookmark.findFirst({
+    const firstBookmark = await prisma.bookmark.findFirst({
       where: { 
         userId: parseInt(userId),
-        NOT: {
-          id: bookmarkToDelete.id
-        }
       },
       orderBy: { createdAt: "asc" },
     });
 
-    // If no bookmarks left, return success message
-    if (!nextBookmark) {
-      return NextResponse.json(
-        { message: "Bookmark deleted. No remaining bookmarks." },
-        { status: 200 }
-      );
-    }
-
-    // Return redirect URL
-    const redirectUrl = `/bookmarks/${nextBookmark.name}`;
-    return NextResponse.json(
-      { redirect: redirectUrl },
-      { status: 200 }
-    );
-
+    return NextResponse.json({ firstBookmark });
   } catch (error) {
     console.error("Error in DELETE function:", error);
     return NextResponse.json(

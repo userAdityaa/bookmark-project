@@ -183,7 +183,7 @@ const BookmarkPage = () => {
 
     const handleDeleteGroup = async() => { 
         try { 
-            await axios.delete(
+            const response = await axios.delete(
                 `https://bkmarks.vercel.app/api/bookmarks/user/${userId}`,
                 {
                   headers: {
@@ -193,6 +193,8 @@ const BookmarkPage = () => {
                     bookmarkName: currentBookmark?.name, 
                   },
                 });
+            const { firstBookmark } = response.data;
+            router.push(`/bookmarks/${firstBookmark.name}`);
         } catch(error) {
             console.error("Error while deleting the bookmark:", error);
         }
