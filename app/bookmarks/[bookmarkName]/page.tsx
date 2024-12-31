@@ -183,6 +183,7 @@ const BookmarkPage = () => {
 
     const handleDeleteGroup = async() => { 
         try { 
+            console.log(currentBookmark?.name);
             await axios.delete(
                 `https://bkmarks.vercel.app/api/bookmarks/user/${userId}`,
                 {
