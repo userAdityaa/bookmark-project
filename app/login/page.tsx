@@ -53,16 +53,16 @@ export default function SignIn() {
       <div className="flex flex-col items-center mt-[8rem] px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl text-[24px] leading-tight tracking-tight text-gray-900 dark:text-white cursor-pointer">
+            <h1 className="text-xl text-[24px] leading-tight tracking-tight text-gray-400 dark:text-white cursor-pointer">
               Login
               <Link href='/register'>
                 <p className='text-[14px] mt-[0.2rem] text-[#a0a0a0]'>Don't have an account? <span className='underline'>Register</span></p>
               </Link>
             </h1>
             <div className="border-t-[0.01px] border-[#a0a0a054] w-full mt-[2.5rem]"></div>
-            <form className="space-y-0 md:space-y-3" onSubmit={handleSubmit}>
+            <form className="space-y-0 md:space-y-6 max-sm:space-y-7" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -74,8 +74,8 @@ export default function SignIn() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+              <div className=''>
+                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Password</label>
                 <input
                   type="password"
                   name="password"
@@ -87,12 +87,9 @@ export default function SignIn() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              <div className="flex items-center justify-between">
-                {/* Optionally add a "Remember Me" checkbox here */}
-              </div>
               <button
                 type="submit"
-                className="w-full text-white bg-[#282828] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                className="w-full text-white bg-[#282828] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center border border-white"
               >
                 Login
               </button>
