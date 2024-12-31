@@ -78,11 +78,11 @@ export async function DELETE (request: Request,
   const {bookmarkName} = await request.json(); 
   const userId = params.id;
 
+  console.log(bookmarkName)
+
   if (!userId || !bookmarkName) {
     return NextResponse.json({ error: "User ID or Bookmark Name missing" }, { status: 400 });
   }
-
-  console.log("sdfsdfsdf");
 
   const bookmarkToDelete = await prisma.bookmark.findFirst({
     where: {
