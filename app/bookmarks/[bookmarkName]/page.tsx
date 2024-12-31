@@ -184,7 +184,7 @@ const BookmarkPage = () => {
     const handleDeleteGroup = async() => { 
         try { 
             await axios.delete(
-                `https://bkmarks.vercel.app/api/bookmarks/${userId}`,
+                `https://bkmarks.vercel.app/api/bookmarks/user/${userId}`,
                 {
                   headers: {
                     "Content-Type": "application/json", 
