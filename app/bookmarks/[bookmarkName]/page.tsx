@@ -4,7 +4,7 @@ import Image from 'next/image'
 import axios from 'axios';
 import { LogOut, Plus, Trash2 } from 'lucide-react';
 import {useRouter} from 'next/navigation';
-import { BookmarkMenu, NewGroupDialog } from '@/app/components';
+import { BookmarkMenu, NewGroupDialog, UserMenu } from '@/app/components';
 
 interface ListItem {
     icon: string; 
@@ -321,6 +321,12 @@ const BookmarkPage = () => {
                         </div>
                     </div>
                 )}
+
+                <UserMenu 
+                userNameOpen={userNameOpen}
+                setUserNameOpen={setUserNameOpen}
+                handleLogout={handleLogout}
+                />
             </nav>
     
             <div className='flex items-center py-8 relative flex-col gap-8'>
