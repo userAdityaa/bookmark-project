@@ -51,7 +51,7 @@ export default function Register() {
       <div className="flex flex-col items-center mt-[8rem] px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl text-[24px] leading-tight tracking-tight text-gray-900 dark:text-white cursor-pointer">
+            <h1 className="text-xl text-[24px] leading-tight tracking-tight text-gray-400 dark:text-white cursor-pointer">
               Register
               <Link href='/login'><p className='text-[14px] mt-[0.2rem] text-[#a0a0a0]'>Already have an account? <span className='underline'>Login</span></p></Link>
             </h1>
@@ -61,9 +61,9 @@ export default function Register() {
               </div>
             )}
             <div className="border-t-[0.01px] border-[#a0a0a054] w-full mt-[2.5rem]"></div>
-            <form className="space-y-0 md:space-y-3" onSubmit={handleSubmit}>
+            <form className="space-y-0 md:space-y-3 max-sm:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -76,7 +76,7 @@ export default function Register() {
                 />
               </div>
               <div className='relative'>
-                <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Username</label>
                 <input
                   type="text"
                   name="username"
@@ -90,7 +90,7 @@ export default function Register() {
                 <Image src={userIcon} alt='username icon' height={0} width={20} className='absolute top-[2.6rem] left-3' />
               </div>
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Password</label>
                 <input
                   type="password"
                   name="password"
