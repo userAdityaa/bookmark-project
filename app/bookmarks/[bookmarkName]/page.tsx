@@ -349,14 +349,14 @@ const BookmarkPage = () => {
                     />
                 </div>
     
-                <div className='flex justify-between items-center border-b border-zinc-700 py-4 w-[55vw] text-[13px] text-[#a0a0a0] max-sm:w-[92vw]'>
+                <div className='flex justify-between items-center border-b border-zinc-700 py-4 w-[55vw] text-[13px] text-[#a0a0a0] max-sm:w-[92%]'>
                     <div className='flex items-center justify-between w-full'>
                         <p>Title</p>
                         <p>Created At</p>
                     </div>
                 </div>
     
-                <div className='w-[55vw] max-sm:w-[92vw]'>
+                <div className='w-[55vw] max-sm:w-[92%]'>
                 {results.map((result, index) => {
                     const isColor = /^#[0-9A-Fa-f]{6}$/i.test(result.name);
 
@@ -386,7 +386,9 @@ const BookmarkPage = () => {
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
                                 {result.link !== '' && 
-                                    <p className='text-[14px] text-[#a0a0a0]'>{result.link}</p>
+                                <p className='text-[14px] text-[#a0a0a0] sm:max-w-[18ch] sm:truncate'>
+                                    {result.link}
+                                </p>
                                 }
                             </div>
                             <p className='text-[13px] text-[#a0a0a0]'>{convertDate(result.createdAt)}</p>
