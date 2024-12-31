@@ -382,11 +382,11 @@ const BookmarkPage = () => {
                                 ) : (
                                     <Image src={result.icon} alt="result icon" height={20} width={18} />
                                 )}
-                                <p>
+                                <p className='text-[14px] text-zinc-400 max-sm:max-w-[8ch] max-sm:truncate'>
                                     {copiedIndex === index ? "Copied!" : truncateText(result.name, 50)}
                                 </p>
                                 {result.link !== '' && 
-                                <p className='text-[14px] text-[#a0a0a0] max-sm:max-w-[15ch] max-sm:truncate'>
+                                <p className='text-[14px] text-[#a0a0a0] max-sm:max-w-[20ch] max-sm:truncate'>
                                     {result.link}
                                 </p>
                                 }
