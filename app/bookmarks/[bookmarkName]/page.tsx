@@ -343,7 +343,7 @@ const BookmarkPage = () => {
                                 {isColor ? (
                                     <div
                                         style={{ backgroundColor: result.name }}
-                                        className="w-6 h-6 rounded-full"
+                                        className="w-5 h-5 rounded-full"
                                     ></div>
                                 ) : (
                                     <Image src={result.icon} alt="result icon" height={20} width={18} />
@@ -361,6 +361,7 @@ const BookmarkPage = () => {
                 })}
                 </div>
             </div>
+            <div className="fixed bottom-0 w-full h-28 bg-gradient-to-t from-[#141313] to-transparent blur-md"></div>
         </>
     );
 }
