@@ -70,3 +70,52 @@ export async function POST(request: Request,
     return NextResponse.json({ error: "Error fetching bookmark" }, { status: 500 });
   }
 }
+
+export async function DELETE (request: Request, 
+  {params}: {params: {id: string}}
+) { 
+  try {
+  const {bookmarkName} = await request.json(); 
+  const userId = params.id;
+
+  if (!userId || !bookmarkName) {
+    return NextResponse.json({ error: "User ID or Bookmark Name missing" }, { status: 400 });
+  }
+
+  const bookmarkToDelete = await prisma.bookmark.findFirst({
+    where: {
+      userId: parseInt(userId),
+      name: bookmarkName,
+    },
+  });
+
+  if (!bookmarkToDelete) {
+    return NextResponse.json(
+      { error: "Bookmark not found" },
+      { status: 404 }
+    );
+  }
+
+  await prisma.bookmark.delete({
+    where: {
+      id: bookmarkToDelete.id,
+    },
+  });
+
+  const firstBookmark = await prisma.bookmark.findFirst({
+    where: { userId: parseInt(userId) },
+    orderBy: { createdAt: "asc" }, 
+  });
+
+  if (!firstBookmark) {
+    return NextResponse.json({ message: "No bookmarks found" }, { status: 200 });
+  }
+  return NextResponse.redirect(`/bookmarks/${firstBookmark.name}`);
+} catch(error) { 
+  console.error("Error in DELETE function:", error);
+    return NextResponse.json(
+      { error: "Failed to delete the bookmark" },
+      { status: 500 }
+    );
+}
+}

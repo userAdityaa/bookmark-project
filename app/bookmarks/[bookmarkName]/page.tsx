@@ -181,6 +181,23 @@ const BookmarkPage = () => {
         }
     };
 
+    const handleDeleteGroup = async() => { 
+        try { 
+            await axios.delete(
+                `https://bkmarks.vercel.app/api/bookmarks/${userId}`,
+                {
+                  headers: {
+                    "Content-Type": "application/json", 
+                  },
+                  data: {
+                    bookmarkName: currentBookmark?.name, 
+                  },
+                });
+        } catch(error) {
+            console.error("Error while deleting the bookmark:", error);
+        }
+    }
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleAddResult();
@@ -257,7 +274,7 @@ const BookmarkPage = () => {
                             
                             <button
                             className="flex items-center gap-2 w-full px-4 py-2 hover:bg-[#343434] text-[#a0a0a0] text-sm"
-                            >
+                           onClick={handleDeleteGroup}>
                             <Trash2 className="w-4 h-4" />
                             Delete Group
                             </button>
