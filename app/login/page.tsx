@@ -15,32 +15,34 @@ export default function SignIn() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault(); 
-    try {
-      const response = await axios.post("https://bkmarks.vercel.app/api/auth/login", 
-        { email, password },  
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+    setIsLoading(true);
+    setTimeout(async () => {
+      try {
+        const response = await axios.post("https://bkmarks.vercel.app/api/auth/login", 
+          { email, password },  
+          { headers: { 'Content-Type': 'application/json' } }
+        );
 
-      const userId = response.data.user.id;
+        const userId = response.data.user.id;
 
-      const bookmarkResponse = await axios.get(`https://bkmarks.vercel.app/api/bookmarks/user/${userId}`, 
-        {headers: {'Content-Type': 'application/json'}}
-      );
+        const bookmarkResponse = await axios.get(`https://bkmarks.vercel.app/api/bookmarks/user/${userId}`, 
+          {headers: {'Content-Type': 'application/json'}}
+        );
 
-      const bookmark = bookmarkResponse.data; 
-      const bookmarkName = bookmark?.name?.toLowerCase();
+        const bookmark = bookmarkResponse.data; 
+        const bookmarkName = bookmark?.name?.toLowerCase();
 
-      if(bookmarkName) { 
-        setIsLoading(true);
-        router.push(`/bookmarks/${bookmarkName}`)
+        if(bookmarkName) { 
+          router.push(`/bookmarks/${bookmarkName}`)
+        }
+        else { 
+          alert("Bookmark name not found!");
+        }
+      } catch (error: any) {
+        console.error("Login error:", error.response?.data || error.message);
+        alert("Login failed. Please check your credentials and try again.");
       }
-      else { 
-        alert("Bookmark name not found!");
-      }
-    } catch (error: any) {
-      console.error("Login error:", error.response?.data || error.message);
-      alert("Login failed. Please check your credentials and try again.");
-    }
+    }, 8000);
 };
 
 
