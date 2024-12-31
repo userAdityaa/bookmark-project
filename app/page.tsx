@@ -148,7 +148,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#161616] h-[120vh] w-[100vw] flex items-center justify-center relative">
-      <div className="w-[37.2%] h-[80%] flex flex-col mt-[10rem]">
+      <div className="w-[37.2%] h-[80%] flex flex-col mt-[10rem] max-sm:w-[80%] max-sm:-mt-[6rem] max-lg:w-[90%]">
         <div className="flex justify-between">
           <Image
             src="/logo.png"
